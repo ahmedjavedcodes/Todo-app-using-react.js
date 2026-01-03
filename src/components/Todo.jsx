@@ -5,37 +5,43 @@ import { useState, useEffect } from 'react';
 const Todo = () => {
 
     const [todos, setTodos] = useState([])
-    const [todo, setTodo] = useState()
+    const [todo, setTodo] = useState("")
     const [isCompleted, setIsCompleted] = useState(false)
     const [error, setError] = useState(null)
     const [loading, setLoading] = useState(true)
 
-    useEffect(() => {
-        const getTodos = async () => {
-            try {
-                let todos = await fetchTodos();
-                console.log(todos)
-                setTodos(todos);
+    // useEffect(() => {
+    //     const getTodos = async () => {
+    //         try {
+    //             let todos = await fetchTodos();
+    //             console.log(todos)
+    //             setTodos(todos);
 
-            }
-            catch (error) {
-                console.log(error)
-                setError(error)
-            }
-            finally {
-                setLoading(false)
-            }
-        }
-
-        getTodos();
-    }, [])
+    //         }
+    //         catch (error) {
+    //             console.log(error)
+    //             setError(error)
+    //         }
+    //         finally {
+    //             setLoading(false)
+    //         }
+    //     }
+    //     getTodos();
+    // }, [])
 
     const handleSubmit = () => {
         if (!todo || todo.trim() == "") {
             return;
         }
         else {
-            setTodos([...todos, { id: Date.now(), title: todo, completed: false }])
+
+            const newTodo = {
+                id: Date.now(),
+                title: todo,
+                completed: false
+            }
+
+            setTodos(todos => [...todos, newTodo])
             setTodo("")
         }
     }
@@ -52,14 +58,24 @@ const Todo = () => {
         setTodos(updatedTodos);
     }
 
-    useEffect(() => {
-        localStorage.setItem("todos", JSON.stringify(todos));
-    }, [todos]);
+    // const SavedTodos = () => {
+    //     localStorage.setItem("todos", JSON.stringify(todos))
+    //     const savedTodos = JSON.parse(localStorage.getItem("todos")) || [];
+    //     return savedTodos
+    // }
 
     useEffect(() => {
         const savedTodos = JSON.parse(localStorage.getItem("todos")) || [];
         setTodos(savedTodos);
     }, []);
+    // SavedTodos();
+    useEffect(() => {
+        localStorage.setItem("todos", JSON.stringify(todos));
+    }, [todos]);
+
+
+
+
 
     return (
         <div>
@@ -74,7 +90,16 @@ const Todo = () => {
                         type="text"
                         placeholder="Add a todo"
                         value={todo || ""}
-                        onChange={(e) => setTodo(e.target.value)}
+                        onChange={e => {
+                            // e.preventDefault()
+                            setTodo(e.target.value)
+                        }}
+                        onKeyDown={e => {
+                            if (e.key == "Enter") {
+                                handleSubmit()
+                            }
+                        }
+                        }
                         className="flex-1 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
                     <button
