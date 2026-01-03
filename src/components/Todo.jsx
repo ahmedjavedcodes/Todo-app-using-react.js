@@ -52,6 +52,15 @@ const Todo = () => {
         setTodos(updatedTodos);
     }
 
+    useEffect(() => {
+        localStorage.setItem("todos", JSON.stringify(todos));
+    }, [todos]);
+
+    useEffect(() => {
+        const savedTodos = JSON.parse(localStorage.getItem("todos")) || [];
+        setTodos(savedTodos);
+    }, []);
+
     return (
         <div>
             <section className="max-w-md mx-auto mt-10 p-6 bg-white rounded-lg shadow-lg">
